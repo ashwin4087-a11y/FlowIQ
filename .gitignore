@@ -1,0 +1,30 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+server/.env
+
+# Local datasets (do not commit)
+*.zip
+*.crdownload
+ESC-50-master/
+sound_extracted/
+
+# ML artifacts
+ml/audio/models/*.pt
+ml/audio/models/*.pth
+ml/audio/models/*.onnx
+ml/surge/models/*.joblib
+ml/audio/data/processed/
+ml/audio/data/manifests/*.json
+!ml/audio/data/manifests/.gitkeep
+
+# Logs
+*.log
+ml/audio/logs/
+ml/audio/reports/*.png
+
+# OS
+.DS_Store
+Thumbs.db

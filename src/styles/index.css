@@ -1,0 +1,19 @@
+@import './fonts.css';
+@import './tailwind.css';
+@import './theme.css';
+
+/* MapLibre / MapTiler map must fill the Route Planner container */
+.maplibregl-map-host {
+  position: relative;
+}
+.maplibregl-map-host .maplibregl-map {
+  position: absolute !important;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+.maplibregl-map-host .maplibregl-canvas-container,
+.maplibregl-map-host canvas.maplibregl-canvas {
+  width: 100% !important;
+  height: 100% !important;
+}

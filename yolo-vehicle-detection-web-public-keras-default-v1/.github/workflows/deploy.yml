@@ -1,0 +1,102 @@
+name: Deploy Next.js to Google Cloud VM
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  VM_IP: ${{ secrets.VM_IP }}
+  SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+  SSH_KEY: ${{ secrets.SSH_KEY }}
+  PROJECT_DIR: "/home/${{ secrets.SSH_USERNAME }}/my-next-app"
+  WORKING_DIR: "client"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ${{ env.WORKING_DIR }}
+
+      - name: Run lint
+        run: npm run lint
+        working-directory: ${{ env.WORKING_DIR }}
+
+      - name: Build Next.js app
+        run: npm run build
+        working-directory: ${{ env.WORKING_DIR }}
+
+      - name: Verify Next.js build output
+        run: ls -l ${{ env.WORKING_DIR }}/.next
+
+      - name: Setup SSH
+        run: |
+          echo "$SSH_KEY" > ssh_key.pem
+          chmod 600 ssh_key.pem
+          mkdir -p ~/.ssh
+          echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+        env:
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+
+      - name: Debug SSH Connection
+        run: ssh -v -o StrictHostKeyChecking=no -i ssh_key.pem $SSH_USERNAME@$VM_IP "echo SSH connection successful"
+
+      - name: Deploy Next.js build to VM using rsync
+        run: |
+          rsync -avz --exclude='.next' -e "ssh -o StrictHostKeyChecking=no -i ssh_key.pem" \
+            $WORKING_DIR/ \
+            $WORKING_DIR/package.json \
+            $WORKING_DIR/package-lock.json \
+            $SSH_USERNAME@$VM_IP:$PROJECT_DIR/
+
+      - name: Move Next.js build to /var/www/client
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ssh_key.pem $SSH_USERNAME@$VM_IP << 'EOF'
+            set -e
+            sudo mkdir -p /var/www/client
+            sudo rm -rf /var/www/client/*
+            sudo mv /home/ballx/my-next-app/* /var/www/client/
+            sudo cp /home/ballx/.env.production /var/www/client/
+            sudo chown -R www-data:www-data /var/www/client
+          EOF
+
+      - name: Restart Next.js app on VM
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ssh_key.pem $SSH_USERNAME@$VM_IP << 'EOF'
+            set -e
+            sudo bash -c '
+              cd /var/www/client
+
+              # ตรวจสอบเวอร์ชัน Node.js และอัปเดตถ้าจำเป็น
+              NODE_VERSION=$(node -v 2>/dev/null || echo "none")
+              if [[ "$NODE_VERSION" == "none" || "${NODE_VERSION:1:2}" -lt 16 ]]; then
+                echo "Updating Node.js..."
+                curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+                apt-get install -y nodejs
+              fi
+
+              # อัปเดต npm
+              npm install -g npm@latest --unsafe-perm
+
+              # ติดตั้ง dependencies (เฉพาะที่จำเป็น)
+              npm install
+              npm run build
+              
+              # Restart pm2
+              pm2 restart dtect || pm2 start npm --name "dtect" -- start
+            '
+          EOF
+
+      - name: Cleanup
+        run: rm -f ssh_key.pem

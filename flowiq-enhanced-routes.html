@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FlowIQ — Advanced Routing System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root {
+    --bg: #0a0f1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: rgba(255,255,255,0.07);
+    --accent: #00e5ff;
+    --accent2: #00ff88;
+    --warn: #ff6b35;
+    --text: #e8edf5;
+    --muted: #6b7a99;
+    --panel-w: 420px;
+    --route-primary: #00ff88;
+    --route-alt1: #00e5ff;
+    --route-alt2: #fbbf24;
+    --route-alt3: #f97316;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
+
+  #map { position: absolute; inset: 0; z-index: 1; filter: brightness(0.85) saturate(1.2) hue-rotate(195deg); }
+
+  /* ── Main Panel ── */
+  #panel {
+    position: absolute; top: 0; left: 0; bottom: 0; width: var(--panel-w);
+    z-index: 10; background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    box-shadow: 4px 0 40px rgba(0,0,0,0.5);
+    overflow-y: auto;
+  }
+  #panel::-webkit-scrollbar { width: 6px; }
+  #panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* Header */
+  .header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+    flex-shrink: 0;
+  }
+  .logo-mark {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700;
+    color: #0a0f1a; letter-spacing: -1px;
+  }
+  .logo-text { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+  .logo-text span { color: var(--accent); }
+
+  /* Route Tabs */
+  .route-tabs {
+    padding: 16px 16px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex; gap: 8px; overflow-x: auto;
+    flex-shrink: 0;
+  }
+  .route-tabs::-webkit-scrollbar { height: 4px; }
+  .route-tabs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .route-tab {
+    padding: 8px 14px; border-radius: 8px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); cursor: pointer;
+    font-size: 12px; font-weight: 600; white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .route-tab:hover { border-color: var(--accent); color: var(--text); }
+  .route-tab.active {
+    background: rgba(0,255,136,0.12); border-color: var(--accent2);
+    color: var(--accent2);
+  }
+
+  /* Search Area */
+  .search-area {
+    padding: 16px; flex-shrink: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .route-inputs { display: flex; flex-direction: column; gap: 8px; position: relative; }
+  .route-line {
+    position: absolute; left: 19px; top: 42px; height: 16px; width: 2px;
+    background: linear-gradient(to bottom, var(--accent2), var(--accent));
+    z-index: 0;
+  }
+  .input-row {
+    display: flex; align-items: center; gap: 10px; position: relative; z-index: 1;
+  }
+  .dot {
+    width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0;
+    border: 2px solid; display: flex; align-items: center; justify-content: center;
+  }
+  .dot.origin { border-color: var(--accent2); background: var(--accent2); }
+  .dot.dest { border-color: var(--accent); }
+  .dot.dest::after { content:''; width:6px; height:6px; border-radius:50%; background:var(--accent); }
+
+  .input-field {
+    flex: 1; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 14px; font-size: 13px; color: var(--text);
+    font-family: 'DM Sans', sans-serif; outline: none; transition: border 0.2s;
+  }
+  .input-field::placeholder { color: var(--muted); }
+  .input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,229,255,0.1); }
+
+  .btn-find {
+    margin-top: 8px;
+    background: linear-gradient(135deg, var(--accent2), #00c96e);
+    border: none; border-radius: 10px; padding: 12px 16px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+    color: #0a0f1a; cursor: pointer; display: flex; align-items: center;
+    justify-content: center; gap: 8px; transition: opacity 0.2s, transform 0.1s;
+    letter-spacing: 0.2px;
+  }
+  .btn-find:hover { opacity: 0.9; }
+  .btn-find:active { transform: scale(0.98); }
+
+  /* Routes Container */
+  #routes-container {
+    flex: 1; overflow-y: auto; padding: 12px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  #routes-container::-webkit-scrollbar { width: 4px; }
+  #routes-container::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* Route Card */
+  .route-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px; cursor: pointer;
+    transition: all 0.3s; position: relative; overflow: hidden;
+    animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  .route-card:hover {
+    border-color: currentColor; transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  }
+  .route-card.selected {
+    border: 2px solid; background: rgba(255,255,255,0.05);
+  }
+  .route-card.primary { --card-color: var(--route-primary); border-color: var(--route-primary); }
+  .route-card.alt1 { --card-color: var(--route-alt1); }
+  .route-card.alt2 { --card-color: var(--route-alt2); }
+  .route-card.alt3 { --card-color: var(--route-alt3); }
+
+  @keyframes slideUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+  .route-header {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
+  }
+  .route-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(0,255,136,0.15); border: 1px solid rgba(0,255,136,0.3);
+    color: var(--accent2); border-radius: 5px; padding: 3px 8px;
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .route-badge.alt { background: rgba(0,229,255,0.15); border-color: rgba(0,229,255,0.3); color: var(--accent); }
+  .route-badge.warn { background: rgba(255,107,53,0.15); border-color: rgba(255,107,53,0.3); color: var(--warn); }
+
+  .route-title {
+    font-size: 13px; font-weight: 700; margin-bottom: 6px;
+  }
+  .route-via { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+
+  .route-stats {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 8px;
+  }
+  .stat {
+    background: rgba(255,255,255,0.04); border-radius: 8px;
+    padding: 6px; text-align: center;
+  }
+  .stat-val {
+    font-family: 'Space Mono', monospace; font-size: 16px; font-weight: 700;
+    color: var(--accent);
+  }
+  .stat-val.green { color: var(--accent2); }
+  .stat-val.warn { color: var(--warn); }
+  .stat-lbl { font-size: 9px; color: var(--muted); margin-top: 1px; text-transform: uppercase; letter-spacing: 0.3px; }
+
+  .route-tags {
+    display: flex; flex-wrap: wrap; gap: 4px;
+  }
+  .tag {
+    background: rgba(0,229,255,0.08); border: 0.5px solid rgba(0,229,255,0.15);
+    color: var(--accent); border-radius: 12px; padding: 3px 8px;
+    font-size: 9px; font-weight: 500;
+  }
+  .tag.green { background: rgba(0,255,136,0.08); border-color: rgba(0,255,136,0.15); color: var(--accent2); }
+  .tag.warn { background: rgba(255,107,53,0.08); border-color: rgba(255,107,53,0.15); color: var(--warn); }
+
+  /* Stats Cards */
+  .comparison-panel {
+    padding: 12px; border-top: 1px solid var(--border);
+    background: rgba(255,255,255,0.02); flex-shrink: 0;
+  }
+  .comparison-title {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;
+  }
+  .comparison-stat {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 0; border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .comparison-stat:last-child { border-bottom: none; }
+  .comparison-label { color: var(--muted); }
+  .comparison-value { font-weight: 600; color: var(--accent2); font-family: 'Space Mono', monospace; }
+
+  /* Map Overlays */
+  .leaflet-container { background: #12192b; }
+  .map-overlay {
+    position: absolute; z-index: 5; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 14px; font-size: 12px;
+  }
+  #map-badge {
+    top: 16px; right: 16px; display: flex; align-items: center; gap: 8px;
+  }
+  .surge-free-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(0,255,136,0.15); border: 1px solid rgba(0,255,136,0.3);
+    color: var(--accent2); border-radius: 20px; padding: 6px 14px;
+    font-size: 12px; font-weight: 700;
+  }
+
+  /* Loading */
+  #loading {
+    display: none; padding: 20px; text-align: center;
+    flex-direction: column; align-items: center; gap: 12px;
+  }
+  #loading.show { display: flex; }
+  .spinner {
+    width: 32px; height: 32px; border: 3px solid var(--border);
+    border-top-color: var(--accent); border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .leaflet-tile { filter: brightness(0.5) saturate(0.6) hue-rotate(170deg); }
+</style>
+</head>
+<body>
+
+<!-- Main Panel -->
+<div id="panel">
+  <div class="header">
+    <div class="logo-mark">FQ</div>
+    <div class="logo-text">Flow<span>IQ</span></div>
+  </div>
+
+  <div class="route-tabs" id="route-tabs">
+    <button class="route-tab active" data-route="ashok-nagar">Ashok Nagar</button>
+    <button class="route-tab" data-route="guindy">Guindy</button>
+    <button class="route-tab" data-route="kodambakkam">Kodambakkam</button>
+    <button class="route-tab" data-route="nungambakkam">Nungambakkam</button>
+    <button class="route-tab" data-route="vadapalani">Vadapalani</button>
+    <button class="route-tab" data-route="anna-nagar">Anna Nagar</button>
+    <button class="route-tab" data-route="koyambedu">Koyambedu</button>
+    <button class="route-tab" data-route="ambattur">Ambattur</button>
+  </div>
+
+  <div class="search-area">
+    <div class="route-inputs">
+      <div class="route-line"></div>
+      <div class="input-row">
+        <div class="dot origin"></div>
+        <input id="origin-input" class="input-field" placeholder="Your location…" value="Chennai Central" />
+      </div>
+      <div class="input-row">
+        <div class="dot dest"></div>
+        <input id="dest-input" class="input-field" placeholder="Destination…" />
+      </div>
+    </div>
+    <button class="btn-find" onclick="findRoutesForZone()">
+      <span>→</span> Find Routes
+    </button>
+  </div>
+
+  <div id="loading">
+    <div class="spinner"></div>
+    <div style="font-size: 12px; color: var(--muted);">Computing optimal routes…</div>
+  </div>
+
+  <div id="routes-container"></div>
+
+  <div class="comparison-panel">
+    <div class="comparison-title">Best Route Comparison</div>
+    <div class="comparison-stat">
+      <span class="comparison-label">Time Saved</span>
+      <span class="comparison-value" id="comp-time">—</span>
+    </div>
+    <div class="comparison-stat">
+      <span class="comparison-label">Distance Optimal</span>
+      <span class="comparison-value" id="comp-dist">—</span>
+    </div>
+    <div class="comparison-stat">
+      <span class="comparison-label">Surge Risk</span>
+      <span class="comparison-value" id="comp-surge" style="color: var(--accent2);">Low</span>
+    </div>
+  </div>
+</div>
+
+<!-- Map -->
+<div id="map"></div>
+<div class="map-overlay" id="map-badge" style="display:none;">
+  <div class="surge-free-badge">✓ Optimized Route Active</div>
+</div>
+
+<script>
+// ── Route Data ──
+const ROUTE_DATA = {
+  'ashok-nagar': {
+    name: 'Ashok Nagar',
+    coords: [13.0468, 80.2152],
+    characteristics: ['Urban Corridor', 'Signal-heavy', 'Peak-time congestion'],
+    alternates: 3,
+  },
+  'guindy': {
+    name: 'Guindy',
+    coords: [13.0067, 80.2206],
+    characteristics: ['Eastern Bypass', 'Park Route', 'Low surge'],
+    alternates: 3,
+  },
+  'kodambakkam': {
+    name: 'Kodambakkam',
+    coords: [13.0501, 80.2123],
+    characteristics: ['Central Junction', 'Mixed Traffic', 'Industrial'],
+    alternates: 3,
+  },
+  'nungambakkam': {
+    name: 'Nungambakkam',
+    coords: [13.0569, 80.2425],
+    characteristics: ['Northern Corridor', 'High Volume', 'Multiple exits'],
+    alternates: 3,
+  },
+  'vadapalani': {
+    name: 'Vadapalani',
+    coords: [13.0501, 80.2123],
+    characteristics: ['Western Bypass', 'Residential', 'Free-flow'],
+    alternates: 3,
+  },
+  'anna-nagar': {
+    name: 'Anna Nagar',
+    coords: [13.0850, 80.2101],
+    characteristics: ['Northern Zone', 'Main Roads', 'Moderate'],
+    alternates: 3,
+  },
+  'koyambedu': {
+    name: 'Koyambedu',
+    coords: [13.0694, 80.1946],
+    characteristics: ['Western Junction', 'Market Area', 'Peak surge'],
+    alternates: 3,
+  },
+  'ambattur': {
+    name: 'Ambattur',
+    coords: [13.1143, 80.1548],
+    characteristics: ['Industrial Zone', 'Truck route', 'Less congested'],
+    alternates: 3,
+  },
+};
+
+const ALTERNATE_ROUTES = [
+  {
+    id: 'primary',
+    name: 'Primary Route (Recommended)',
+    type: 'Fastest',
+    distance: 12.5,
+    time: 24,
+    timeSaved: 8,
+    surge: 'Low',
+    color: var(--route-primary),
+    via: 'Main arterial, bypass enabled',
+    tags: ['Surge-free', 'Fast-track', 'Recommended'],
+  },
+  {
+    id: 'alt1',
+    name: 'Alternate Route A',
+    type: 'Balanced',
+    distance: 13.2,
+    time: 26,
+    timeSaved: 6,
+    surge: 'Very Low',
+    color: var(--route-alt1),
+    via: 'Residential corridor',
+    tags: ['Smooth', 'Scenic', 'Signal-free'],
+  },
+  {
+    id: 'alt2',
+    name: 'Alternate Route B',
+    type: 'Scenic',
+    distance: 14.1,
+    time: 28,
+    timeSaved: 4,
+    surge: 'Minimal',
+    color: var(--route-alt2),
+    via: 'Park route, no trucks',
+    tags: ['Quieter', 'Less traffic', 'Green zone'],
+  },
+  {
+    id: 'alt3',
+    name: 'Alternate Route C',
+    type: 'Express',
+    distance: 11.8,
+    time: 20,
+    timeSaved: 12,
+    surge: 'Medium',
+    color: var(--route-alt3),
+    via: 'Highway express, tolls',
+    tags: ['Highway', 'Fastest', 'Premium'],
+  },
+];
+
+// ── Map Init ──
+const map = L.map('map', { zoomControl: false, attributionControl: false })
+  .setView([13.0827, 80.2707], 13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+let routeLayers = [];
+let selectedRoute = 'ashok-nagar';
+let currentRoutes = [];
+
+function clearRoutes() {
+  routeLayers.forEach(layer => map.removeLayer(layer));
+  routeLayers = [];
+}
+
+function generateRoute(start, end, offset = 0) {
+  const points = [start];
+  const dx = end[0] - start[0];
+  const dy = end[1] - start[1];
+  const dist = Math.sqrt(dx*dx + dy*dy);
+  const steps = Math.max(8, Math.floor(dist * 100));
+  const devFactor = (0.008 + Math.random() * 0.005) + offset * 0.002;
+  const perpX = -dy / dist * devFactor;
+  const perpY = dx / dist * devFactor;
+
+  for (let i = 1; i < steps; i++) {
+    const t = i / steps;
+    const jitter = Math.sin(t * Math.PI * 3) * 0.002;
+    points.push([
+      start[0] + dx * t + perpX * Math.sin(t * Math.PI) + jitter * (Math.random()-0.5),
+      start[1] + dy * t + perpY * Math.sin(t * Math.PI) + jitter * (Math.random()-0.5)
+    ]);
+  }
+  points.push(end);
+  return points;
+}
+
+function displayRoute(route, color, weight = 4, opacity = 0.8, index = 0) {
+  const points = generateRoute([13.0827, 80.2757], [13.0067, 80.2206], index);
+  const polyline = L.polyline(points, {
+    color, weight, opacity,
+    dashArray: index > 0 ? '5,5' : null,
+    lineJoin: 'round', lineCap: 'round'
+  }).addTo(map);
+  
+  if (index === 0) {
+    L.polyline(points, {
+      color, weight: 12, opacity: 0.15,
+      lineJoin: 'round', lineCap: 'round'
+    }).addTo(map);
+  }
+  
+  routeLayers.push(polyline);
+  return polyline;
+}
+
+function renderRoutes() {
+  const container = document.getElementById('routes-container');
+  container.innerHTML = '';
+  
+  const routeClasses = ['primary', 'alt1', 'alt2', 'alt3'];
+  ALTERNATE_ROUTES.forEach((route, idx) => {
+    const routeCard = document.createElement('div');
+    routeCard.className = `route-card ${routeClasses[idx]}`;
+    routeCard.innerHTML = `
+      <div class="route-header">
+        <div>
+          <div class="route-badge ${idx === 0 ? '' : 'alt'}">${route.type}</div>
+          <div class="route-title" style="margin-top: 6px;">${route.name}</div>
+        </div>
+      </div>
+      <div class="route-via">${route.via}</div>
+      <div class="route-stats">
+        <div class="stat">
+          <div class="stat-val green">${route.time}</div>
+          <div class="stat-lbl">min</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val">${route.distance}</div>
+          <div class="stat-lbl">km</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val green">-${route.timeSaved}</div>
+          <div class="stat-lbl">saved</div>
+        </div>
+      </div>
+      <div class="route-tags">
+        ${route.tags.map(t => `<span class="tag ${t.includes('Surge') ? 'green' : ''}">${t}</span>`).join('')}
+      </div>
+    `;
+    
+    routeCard.onclick = () => selectRoute(route, idx);
+    container.appendChild(routeCard);
+  });
+
+  document.getElementById('comp-time').textContent = `-${ALTERNATE_ROUTES[0].timeSaved} min`;
+  document.getElementById('comp-dist').textContent = `${ALTERNATE_ROUTES[0].distance} km`;
+  
+  clearRoutes();
+  ALTERNATE_ROUTES.forEach((route, idx) => displayRoute(route, route.color, 4 - idx * 0.5, 0.9 - idx * 0.1, idx));
+}
+
+function selectRoute(route, idx) {
+  const cards = document.querySelectorAll('.route-card');
+  cards.forEach(c => c.classList.remove('selected'));
+  cards[idx].classList.add('selected');
+  
+  document.getElementById('map-badge').style.display = 'flex';
+  map.fitBounds(routeLayers[idx].getBounds(), { padding: [100, 100], maxZoom: 14 });
+}
+
+function findRoutesForZone() {
+  const origin = document.getElementById('origin-input').value.trim();
+  const dest = document.getElementById('dest-input').value.trim();
+  if (!dest) return;
+  
+  document.getElementById('loading').classList.add('show');
+  setTimeout(() => {
+    document.getElementById('loading').classList.remove('show');
+    renderRoutes();
+    selectRoute(ALTERNATE_ROUTES[0], 0);
+  }, 1200);
+}
+
+// ── Route Tab Selection ──
+document.querySelectorAll('.route-tab').forEach(tab => {
+  tab.addEventListener('click', (e) => {
+    document.querySelectorAll('.route-tab').forEach(t => t.classList.remove('active'));
+    e.target.classList.add('active');
+    selectedRoute = e.target.dataset.route;
+  });
+});
+
+document.getElementById('dest-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') findRoutesForZone();
+});
+
+// Initial render
+renderRoutes();
+</script>
+</body>
+</html>

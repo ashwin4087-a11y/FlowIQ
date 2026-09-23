@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model vehicle_data {
+  id         String    @id @default(uuid())
+  yolo_id    Int
+  video_id   Int       @map("video_id")
+  video      video     @relation(fields: [video_id], references: [id])
+  class      String?   @db.VarChar(50)
+  entry_time DateTime?
+  exit_time  DateTime?
+  lane_type  String?   @db.VarChar(30)
+  lane_id    Int?
+
+  @@unique([yolo_id, video_id])
+}
+
+model video {
+  id           Int            @id @default(autoincrement())
+  title        String         @db.VarChar(255) // Assuming video_name is unique
+  createdAt    DateTime       @default(now())
+  vehicle_data vehicle_data[] // Relation with vehicle_data
+}
+
+model User {
+  id        Int      @id @default(autoincrement()) // Unique identifier
+  name      String // Name of the user
+  email     String   @unique // Unique email address
+  password  String // Hashed password for authentication
+  createdAt DateTime @default(now()) // Date when user was created
+  updatedAt DateTime @updatedAt // Date when user was last updated
+}

@@ -1,0 +1,133 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: express-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: express-app
+  template:
+    metadata:
+      labels:
+        app: express-app
+    spec:
+      containers:
+        - name: express-app
+          image: alivefordie/express-server:v2.8
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "500Mi"
+              cpu: "300m"
+            limits:
+              memory: "1.5Gi"
+              cpu: "1.5"
+          ports:
+            - containerPort: 3001
+          env:
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: express-config
+                  key: REDIS_HOST # ชื่อของ service ที่สร้างไว้สำหรับ Redis
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: express-config
+                  key: REDIS_PORT
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: express-env
+                  key: DATABASE_URL
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: express-env
+                  key: SECRET_KEY
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: express-config
+                  key: PORT
+            - name: URL
+              valueFrom:
+                configMapKeyRef:
+                  name: express-config
+                  key: URL
+            - name: FRONT_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: express-config
+                  key: FRONT_URL
+            - name: FRONT_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: express-config
+                  key: FRONT_PORT
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: express-prisma-service
+  # annotations:
+  #   cloud.google.com/backend-config: '{"default": "express-backend-config"}'
+spec:
+  selector:
+    app: express-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3001
+  sessionAffinity: ClientIP
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: express-config
+data:
+  PORT: "3001"
+  URL: ""
+  FRONT_URL: ""
+  FRONT_PORT: ""
+  REDIS_PORT: "6379"
+  REDIS_HOST: "redis-service"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name:  express-env
+type: Opaque
+data:
+   DATABASE_URL: bXlzcWw6Ly9mb3J0aHJlZTpmb3J0cmVlQDM0LjQ0LjgwLjEzMDozMzA2L3Rlc3Q=
+   SECRET_KEY: UExqUzFxcUlpUXNETGpZZFdBWURFRFhRTzFQUzZsMVFJNWFwUExUUWZQNlhxV2JLRUwwU2hlV2FLOTdobjRZNTBXOWVLU0ZFekNGcE9SZHJtM0VTb0E=
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: express-ingress
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: gb-express-server
+    networking.gke.io/managed-certificates: express-cert
+spec:
+  rules:
+  - host: alivefordie.life
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: express-prisma-service
+            port:
+              number: 80
+---
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: express-cert
+spec:
+  domains:
+    - alivefordie.life

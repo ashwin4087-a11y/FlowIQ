@@ -1,0 +1,7 @@
+{
+  "provenance": "SIMULATION_DATA \u2014 calendar labels for prototype festival surge training; not live Chennai telemetry.",
+  "rows": 1152,
+  "seed": 42,
+  "target": "predicted_level from simulation-derived festival/peak features",
+  "split": "group-aware by group_key recommended"
+}

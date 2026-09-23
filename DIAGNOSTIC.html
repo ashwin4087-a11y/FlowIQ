@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlowIQ - System Check</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: #e8edf5;
+      padding: 20px;
+    }
+    .wrapper { max-width: 600px; margin: 0 auto; }
+    h1 { color: #00ff88; margin-bottom: 20px; font-size: 24px; }
+    .box {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+    .title { color: #00e5ff; font-weight: bold; margin-bottom: 10px; }
+    .text { color: #94a3b8; line-height: 1.6; margin-bottom: 10px; }
+    .code {
+      background: #0f172a;
+      border-left: 3px solid #00ff88;
+      padding: 10px;
+      margin: 10px 0;
+      font-family: monospace;
+      font-size: 12px;
+      color: #00ff88;
+      overflow-x: auto;
+    }
+    .ok { color: #10b981; }
+    .err { color: #ef4444; }
+    .link { color: #00e5ff; cursor: pointer; text-decoration: underline; }
+    button {
+      background: #00ff88;
+      color: #0a0f1a;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      margin: 5px 0;
+    }
+    button:hover { opacity: 0.9; }
+    .status-row { display: flex; gap: 10px; align-items: center; margin: 8px 0; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <h1>🚦 FlowIQ System Check</h1>
+
+    <div class="box">
+      <div class="title">✓ Server Status</div>
+      <div class="status-row">
+        <div class="dot ok"></div>
+        <span class="ok">Server is RUNNING ✓</span>
+      </div>
+      <div class="text">You're seeing this page = localhost:5173 is working</div>
+    </div>
+
+    <div class="box">
+      <div class="title">🔍 Check Your Main App</div>
+      <div class="text">Go to: <a href="/" class="link">http://localhost:5173</a></div>
+      <div class="text">If blank white = React issue</div>
+      <div class="text">If works = App is FIXED! ✓</div>
+    </div>
+
+    <div class="box">
+      <div class="title">🗺️ Check Route Map</div>
+      <div class="text">Go to: <a href="/flowiq-enhanced-routes.html" class="link">Routes Map</a></div>
+      <div class="text">This should show dark theme interactive map</div>
+    </div>
+
+    <div class="box">
+      <div class="title">❌ If Main App is Blank</div>
+      <div class="text">Step 1: Press F12 to open console</div>
+      <div class="text">Step 2: Look for RED ERROR messages</div>
+      <div class="text">Step 3: Run these commands:</div>
+      <div class="code">cd c:\Users\USER\Downloads\FlowIQ
+Ctrl+C
+rm -rf .vite node_modules
+pnpm install
+pnpm dev</div>
+      <div class="text">Step 4: Refresh browser (Ctrl+Shift+R)</div>
+    </div>
+
+    <div class="box">
+      <div class="title">🧪 Quick Tests</div>
+      <button onclick="testConsole()">Check Console</button>
+      <button onclick="testStorage()">Check Storage</button>
+      <button onclick="testVersion()">Show Versions</button>
+    </div>
+
+    <div class="box">
+      <div class="title">📋 What You Should See</div>
+      <div class="status-row">
+        <div class="dot ok"></div>
+        <span>Dark navy theme</span>
+      </div>
+      <div class="status-row">
+        <div class="dot ok"></div>
+        <span>FlowIQ logo in header</span>
+      </div>
+      <div class="status-row">
+        <div class="dot ok"></div>
+        <span>Dashboard + Mobile buttons</span>
+      </div>
+      <div class="status-row">
+        <div class="dot ok"></div>
+        <span>Sidebar with menu items</span>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="title">🚀 Quick Links</div>
+      <button onclick="goToApp()">→ Main App</button>
+      <button onclick="goToMap()">→ Route Map</button>
+      <button onclick="goToDocs()">→ Setup Guide</button>
+    </div>
+
+    <div style="text-align: center; color: #6b7a99; margin-top: 40px; font-size: 12px;">
+      <div>FlowIQ v2.1.0 | System Check | April 2026</div>
+    </div>
+  </div>
+
+  <script>
+    function testConsole() {
+      console.log('Console is working ✓');
+      alert('Check F12 Console - should see green checkmark');
+    }
+    function testStorage() {
+      try {
+        localStorage.setItem('test', 'ok');
+        localStorage.removeItem('test');
+        alert('Storage: WORKING ✓');
+      } catch (e) {
+        alert('Storage: FAILED ❌ - ' + e.message);
+      }
+    }
+    function testVersion() {
+      alert('NODE: ' + (process.version || 'N/A') + '\nURL: ' + window.location.href);
+    }
+    function goToApp() { window.location.href = '/'; }
+    function goToMap() { window.location.href = '/flowiq-enhanced-routes.html'; }
+    function goToDocs() { alert('See: LOCALHOST_SETUP.md in project folder'); }
+  </script>
+</body>
+</html>

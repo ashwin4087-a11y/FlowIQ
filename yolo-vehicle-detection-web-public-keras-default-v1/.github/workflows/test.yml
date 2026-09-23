@@ -1,0 +1,30 @@
+name: Test Workflow
+
+# เมื่อไหร่ที่ workflow จะทำงาน
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+# งานที่ต้องการรัน
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./client
+
+      - name: Run tests
+        run: npm run lint
+        working-directory: ./client

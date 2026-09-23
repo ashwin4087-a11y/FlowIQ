@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: express-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: express-app
+  template:
+    metadata:
+      labels:
+        app: express-app
+    spec:
+      containers:
+        - name: express-app
+          image: alivefordie/express-server:v2.9
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "500Mi"
+              cpu: "300m"
+            limits:
+              memory: "1.5Gi"
+              cpu: "1.5"
+          ports:
+            - containerPort: 3001
+          env:
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: express-config
+                  key: REDIS_HOST # ชื่อของ service ที่สร้างไว้สำหรับ Redis
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: express-config
+                  key: REDIS_PORT
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: express-env
+                  key: DATABASE_URL
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: express-env
+                  key: SECRET_KEY
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: express-config
+                  key: PORT
+            - name: URL
+              valueFrom:
+                configMapKeyRef:
+                  name: express-config
+                  key: URL
+            - name: FRONT_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: express-config
+                  key: FRONT_URL
+            - name: FRONT_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: express-config
+                  key: FRONT_PORT

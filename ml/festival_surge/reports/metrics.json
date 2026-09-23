@@ -1,0 +1,81 @@
+{
+  "model": "RandomForestClassifier",
+  "model_path": "C:\\Users\\USER\\Downloads\\FlowIQ\\ml\\festival_surge\\models\\festival_surge_rf.joblib",
+  "data_source": "ml/festival_surge/data/festival_surge_dataset.csv",
+  "provenance": "SIMULATION_DATA",
+  "feature_names": [
+    "historical_festival_index",
+    "evening_peak_pattern",
+    "junction_baseline",
+    "prev_festival_behaviour",
+    "festival_day",
+    "hour"
+  ],
+  "feature_importance": {
+    "historical_festival_index": 0.3484540843928017,
+    "evening_peak_pattern": 0.16927193972972884,
+    "junction_baseline": 0.09860196478206931,
+    "prev_festival_behaviour": 0.1221117658611469,
+    "festival_day": 0.11869551692285808,
+    "hour": 0.14286472831139513
+  },
+  "test": {
+    "n_samples": 240,
+    "accuracy": 0.7916666666666666,
+    "report": {
+      "HIGH": {
+        "precision": 0.7638888888888888,
+        "recall": 0.7534246575342466,
+        "f1-score": 0.7586206896551724,
+        "support": 73.0
+      },
+      "LOW": {
+        "precision": 0.5384615384615384,
+        "recall": 0.8235294117647058,
+        "f1-score": 0.6511627906976745,
+        "support": 17.0
+      },
+      "MODERATE": {
+        "precision": 0.852112676056338,
+        "recall": 0.8066666666666666,
+        "f1-score": 0.8287671232876712,
+        "support": 150.0
+      },
+      "accuracy": 0.7916666666666666,
+      "macro avg": {
+        "precision": 0.7181543678022551,
+        "recall": 0.7945402453218731,
+        "f1-score": 0.7461835345468394,
+        "support": 240.0
+      },
+      "weighted avg": {
+        "precision": 0.8030609852132738,
+        "recall": 0.7916666666666666,
+        "f1-score": 0.794850609499328,
+        "support": 240.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        55,
+        0,
+        18
+      ],
+      [
+        0,
+        14,
+        3
+      ],
+      [
+        17,
+        12,
+        121
+      ]
+    ],
+    "classes_order": [
+      "HIGH",
+      "LOW",
+      "MODERATE"
+    ]
+  }
+}

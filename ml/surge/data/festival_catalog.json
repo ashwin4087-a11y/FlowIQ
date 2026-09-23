@@ -1,0 +1,24 @@
+{
+  "source": "simulation_defined",
+  "note": "Festival labels used only in simulator-generated training data. Not verified historical Chennai traffic.",
+  "festivals": [
+    {
+      "id": "pongal",
+      "name": "Pongal",
+      "duration_days": 3,
+      "surge_intensity": 1.0
+    },
+    {
+      "id": "republic_day",
+      "name": "Republic Day",
+      "duration_days": 1,
+      "surge_intensity": 0.72
+    },
+    {
+      "id": "deepavali",
+      "name": "Deepavali",
+      "duration_days": 1,
+      "surge_intensity": 0.95
+    }
+  ]
+}

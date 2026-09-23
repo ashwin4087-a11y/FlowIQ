@@ -1,0 +1,26 @@
+{
+  "provenance": "SIMULATION_DATA — calendar labels for prototype festival surge training; not live Chennai telemetry.",
+  "festivals": [
+    {
+      "id": "pongal",
+      "name": "Pongal",
+      "days": 3,
+      "typical_peak_start_hour": 18,
+      "typical_peak_end_hour": 21
+    },
+    {
+      "id": "diwali",
+      "name": "Diwali",
+      "days": 2,
+      "typical_peak_start_hour": 17,
+      "typical_peak_end_hour": 22
+    },
+    {
+      "id": "republic_day",
+      "name": "Republic Day",
+      "days": 1,
+      "typical_peak_start_hour": 9,
+      "typical_peak_end_hour": 12
+    }
+  ]
+}

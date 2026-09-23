@@ -1,0 +1,30 @@
+{
+  "experiment": "Fixed-Time vs PPO",
+  "label": "SIMULATION_DATA",
+  "sumo": "NOT USED",
+  "environment": "ml/rl/env_junction.py (TrafficSimulator-backed Gymnasium env)",
+  "metric_primary": "mean_queue_per_step",
+  "reward_documentation": "Training reward: -queue_length - 0.1 * vehicle_count per env step (simulator only).",
+  "evaluation_status": "executed",
+  "rl_policy_trained": true,
+  "ppo_checkpoint": "C:\\Users\\USER\\Downloads\\FlowIQ\\ml\\rl\\models\\junction_ppo.zip",
+  "fixed_time_controller": {
+    "mean_queue_per_step": 1.9949999999999999,
+    "mean_waiting_per_step": 3.9899999999999998,
+    "throughput_per_step": "Not measured",
+    "travel_time": "Not measured",
+    "episodes": 10,
+    "random_seed_base": 100
+  },
+  "ppo_controller": {
+    "mean_queue_per_step": 1.9416666666666669,
+    "mean_waiting_per_step": 3.8833333333333337,
+    "throughput_per_step": "Not measured",
+    "travel_time": "Not measured",
+    "episodes": 10,
+    "random_seed_base": 200
+  },
+  "note": "Results are simulator-only; not real-world Chennai traffic improvement.",
+  "ppo_lower_mean_queue_than_fixed": true,
+  "episodes_per_controller": 10
+}

@@ -1,0 +1,13 @@
+{
+  "episodes": 400,
+  "seed": 42,
+  "horizon_ticks": 50,
+  "dt": 0.05,
+  "rows": 20000,
+  "label_counts": {
+    "LOW": 16594,
+    "MODERATE": 3026,
+    "HIGH": 380
+  },
+  "target": "surge_level at t+H from simulator queue thresholds (HIGH>=14, MOD>=7)"
+}

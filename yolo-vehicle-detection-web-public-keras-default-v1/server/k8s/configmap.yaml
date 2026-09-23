@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: express-config
+data:
+  PORT: "3001"
+  URL: ""
+  FRONT_URL: ""
+  FRONT_PORT: ""
+  REDIS_PORT: "6379"
+  REDIS_HOST: "redis-service"

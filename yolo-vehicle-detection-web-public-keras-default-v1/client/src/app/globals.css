@@ -1,0 +1,145 @@
+@import url("https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: "Prompt", sans-serif;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slideIn {
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes carMove {
+  0% {
+    left: -100px; /* เริ่มจากซ้ายสุด */
+  }
+  50% {
+    left: 50%; /* กลางหน้าจอ */
+    transform: translateX(-50%);
+  }
+  100% {
+    left: 100%; /* ไปที่ขวาสุด */
+  }
+}
+
+.animate-carMove {
+  position: absolute;
+  animation: carMove 10s linear infinite; /* ทำให้รถเคลื่อนที่ซ้ำไปเรื่อยๆ */
+}
+
+@layer components {
+  .animate-sunrise {
+    animation: sunrise 4s infinite ease-in-out;
+  }
+  .animate-sunset {
+    animation: sunset 4s infinite ease-in-out;
+  }
+  .animate-float {
+    animation: float 3s infinite ease-in-out;
+  }
+  .animate-clouds {
+    animation: clouds 6s infinite linear;
+  }
+  .animate-twinkle {
+    animation: twinkle 2s infinite alternate;
+  }
+  .animate-pulse {
+    animation: pulse 2s infinite;
+  }
+}
+
+@keyframes sunrise {
+  0% {
+    transform: translateY(10px);
+  }
+  50% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(10px);
+  }
+}
+
+@keyframes sunset {
+  0% {
+    transform: translateY(-5px);
+  }
+  50% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(5px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(5px);
+  }
+}
+
+@keyframes clouds {
+  0% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  100% {
+    transform: translateX(-5px);
+  }
+}
+
+@keyframes twinkle {
+  0% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

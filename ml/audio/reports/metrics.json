@@ -1,0 +1,200 @@
+{
+  "model_path": "C:\\Users\\USER\\Downloads\\FlowIQ\\ml\\audio\\models\\siren_cnn.pt",
+  "generated_by": "evaluate.py",
+  "val": {
+    "split": "val",
+    "n_samples": 489,
+    "class_support": {
+      "NON_SIREN": 422,
+      "SIREN": 67
+    },
+    "report": {
+      "NON_SIREN": {
+        "precision": 0.9928400954653938,
+        "recall": 0.985781990521327,
+        "f1-score": 0.9892984542211652,
+        "support": 422.0
+      },
+      "SIREN": {
+        "precision": 0.9142857142857143,
+        "recall": 0.9552238805970149,
+        "f1-score": 0.9343065693430657,
+        "support": 67.0
+      },
+      "accuracy": 0.9815950920245399,
+      "macro avg": {
+        "precision": 0.9535629048755541,
+        "recall": 0.970502935559171,
+        "f1-score": 0.9618025117821154,
+        "support": 489.0
+      },
+      "weighted avg": {
+        "precision": 0.9820770207434336,
+        "recall": 0.9815950920245399,
+        "f1-score": 0.9817637787879696,
+        "support": 489.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        416,
+        6
+      ],
+      [
+        3,
+        64
+      ]
+    ],
+    "roc_auc": 0.9926787861639669
+  },
+  "test": {
+    "split": "test",
+    "n_samples": 490,
+    "class_support": {
+      "NON_SIREN": 422,
+      "SIREN": 68
+    },
+    "report": {
+      "NON_SIREN": {
+        "precision": 0.9951690821256038,
+        "recall": 0.976303317535545,
+        "f1-score": 0.9856459330143541,
+        "support": 422.0
+      },
+      "SIREN": {
+        "precision": 0.868421052631579,
+        "recall": 0.9705882352941176,
+        "f1-score": 0.9166666666666666,
+        "support": 68.0
+      },
+      "accuracy": 0.9755102040816327,
+      "macro avg": {
+        "precision": 0.9317950673785914,
+        "recall": 0.9734457764148313,
+        "f1-score": 0.9511562998405103,
+        "support": 490.0
+      },
+      "weighted avg": {
+        "precision": 0.9775795596652086,
+        "recall": 0.9755102040816327,
+        "f1-score": 0.9760733001334505,
+        "support": 490.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        412,
+        10
+      ],
+      [
+        2,
+        66
+      ]
+    ],
+    "roc_auc": 0.9976303317535544
+  },
+  "test_by_source": {
+    "esc50": {
+      "split": "test_esc50",
+      "n_samples": 400,
+      "class_support": {
+        "NON_SIREN": 392,
+        "SIREN": 8
+      },
+      "report": {
+        "NON_SIREN": {
+          "precision": 0.9947916666666666,
+          "recall": 0.9744897959183674,
+          "f1-score": 0.9845360824742269,
+          "support": 392.0
+        },
+        "SIREN": {
+          "precision": 0.375,
+          "recall": 0.75,
+          "f1-score": 0.5,
+          "support": 8.0
+        },
+        "accuracy": 0.97,
+        "macro avg": {
+          "precision": 0.6848958333333333,
+          "recall": 0.8622448979591837,
+          "f1-score": 0.7422680412371134,
+          "support": 400.0
+        },
+        "weighted avg": {
+          "precision": 0.9823958333333332,
+          "recall": 0.97,
+          "f1-score": 0.9748453608247424,
+          "support": 400.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          382,
+          10
+        ],
+        [
+          2,
+          6
+        ]
+      ],
+      "roc_auc": 0.9834183673469388
+    },
+    "sound": {
+      "split": "test_sound",
+      "n_samples": 90,
+      "class_support": {
+        "NON_SIREN": 30,
+        "SIREN": 60
+      },
+      "report": {
+        "NON_SIREN": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 30.0
+        },
+        "SIREN": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 60.0
+        },
+        "accuracy": 1.0,
+        "macro avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 90.0
+        },
+        "weighted avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 90.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          30,
+          0
+        ],
+        [
+          0,
+          60
+        ]
+      ],
+      "roc_auc": 1.0
+    }
+  },
+  "dataset_note": {
+    "test_total": 490,
+    "test_esc50": 400,
+    "test_sound": 90,
+    "labels": [
+      "NON_SIREN",
+      "SIREN"
+    ],
+    "mapping_tentative": "sound ambulance/firetruck \u2192 SIREN; traffic \u2192 NON_SIREN"
+  }
+}

@@ -1,0 +1,205 @@
+{
+  "model_path": "C:\\Users\\USER\\Downloads\\FlowIQ\\ml\\surge\\models\\surge_rf.joblib",
+  "feature_names": [
+    "vehicle_count",
+    "queue_length",
+    "average_speed_kmh",
+    "q_north",
+    "q_south",
+    "q_east",
+    "q_west",
+    "vc_north",
+    "vc_south",
+    "vc_east",
+    "vc_west",
+    "remaining_seconds",
+    "traffic_mode_surge",
+    "phase_ns_green",
+    "phase_ew_green",
+    "phase_yellow",
+    "phase_all_red"
+  ],
+  "train": {
+    "n_samples": 13950,
+    "accuracy": 0.9911111111111112,
+    "macro_f1": 0.9889058729013372,
+    "report": {
+      "HIGH": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 280.0
+      },
+      "LOW": {
+        "precision": 0.9985963681024651,
+        "recall": 0.9906013401792707,
+        "f1-score": 0.9945827872433377,
+        "support": 11491.0
+      },
+      "MODERATE": {
+        "precision": 0.952443857331572,
+        "recall": 0.9926571821936668,
+        "f1-score": 0.9721348314606741,
+        "support": 2179.0
+      },
+      "accuracy": 0.9911111111111112,
+      "macro avg": {
+        "precision": 0.983680075144679,
+        "recall": 0.9944195074576458,
+        "f1-score": 0.9889058729013372,
+        "support": 13950.0
+      },
+      "weighted avg": {
+        "precision": 0.9914154860925393,
+        "recall": 0.9911111111111112,
+        "f1-score": 0.9911851330441579,
+        "support": 13950.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        280,
+        0,
+        0
+      ],
+      [
+        0,
+        11383,
+        108
+      ],
+      [
+        0,
+        16,
+        2163
+      ]
+    ],
+    "classes_order": [
+      "HIGH",
+      "LOW",
+      "MODERATE"
+    ],
+    "mean_max_proba": 0.9765701052991453
+  },
+  "val": {
+    "n_samples": 3050,
+    "accuracy": 0.9370491803278689,
+    "macro_f1": 0.9135611654931592,
+    "report": {
+      "HIGH": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 30.0
+      },
+      "LOW": {
+        "precision": 0.9772549019607844,
+        "recall": 0.948971820258949,
+        "f1-score": 0.9629057187017002,
+        "support": 2626.0
+      },
+      "MODERATE": {
+        "precision": 0.7148936170212766,
+        "recall": 0.8527918781725888,
+        "f1-score": 0.7777777777777778,
+        "support": 394.0
+      },
+      "accuracy": 0.9370491803278689,
+      "macro avg": {
+        "precision": 0.897382839660687,
+        "recall": 0.9339212328105125,
+        "f1-score": 0.9135611654931592,
+        "support": 3050.0
+      },
+      "weighted avg": {
+        "precision": 0.9435867074280009,
+        "recall": 0.9370491803278689,
+        "f1-score": 0.9393556923787243,
+        "support": 3050.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        30,
+        0,
+        0
+      ],
+      [
+        0,
+        2492,
+        134
+      ],
+      [
+        0,
+        58,
+        336
+      ]
+    ],
+    "classes_order": [
+      "HIGH",
+      "LOW",
+      "MODERATE"
+    ],
+    "mean_max_proba": 0.9573343347390637
+  },
+  "test": {
+    "n_samples": 3000,
+    "accuracy": 0.9526666666666667,
+    "macro_f1": 0.9420012267201964,
+    "report": {
+      "HIGH": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 70.0
+      },
+      "LOW": {
+        "precision": 0.9858510195588848,
+        "recall": 0.9563988696003229,
+        "f1-score": 0.9709016393442623,
+        "support": 2477.0
+      },
+      "MODERATE": {
+        "precision": 0.7950664136622391,
+        "recall": 0.9249448123620309,
+        "f1-score": 0.8551020408163266,
+        "support": 453.0
+      },
+      "accuracy": 0.9526666666666667,
+      "macro avg": {
+        "precision": 0.9269724777403746,
+        "recall": 0.9604478939874513,
+        "f1-score": 0.9420012267201964,
+        "support": 3000.0
+      },
+      "weighted avg": {
+        "precision": 0.9573726869454505,
+        "recall": 0.9526666666666667,
+        "f1-score": 0.9540948617151779,
+        "support": 3000.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        70,
+        0,
+        0
+      ],
+      [
+        0,
+        2369,
+        108
+      ],
+      [
+        0,
+        34,
+        419
+      ]
+    ],
+    "classes_order": [
+      "HIGH",
+      "LOW",
+      "MODERATE"
+    ],
+    "mean_max_proba": 0.963097646694694
+  }
+}
